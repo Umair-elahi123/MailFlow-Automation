@@ -1,0 +1,149 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -480,
+        -128
+      ],
+      "id": "1958aa10-3d5f-4355-ab2f-13df1dcef708",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "url": "https://drive.google.com/uc?export=download&id=1dlXEzAP7Ia6bS7XQHraMKN4XR8oQrcUV",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -288,
+        -128
+      ],
+      "id": "e8fefcc7-f54d-4daa-8302-f4f7daa171e2",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the text data\nconst csvContent = items[0].json.data;\n\n// Replace literal \\n with actual newlines, then split\nconst emails = csvContent\n  .replace(/\\\\n/g, '\\n')  // Convert \\n text to actual newlines\n  .split('\\n')\n  .map(line => line.trim())\n  .filter(line => line.includes('@'));\n\n// Return as array\nreturn emails.map(email => ({\n  json: { email: email }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -112,
+        -128
+      ],
+      "id": "93e79900-af6f-47ec-9199-26f979cfa92d",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        64,
+        -128
+      ],
+      "id": "5aca9b04-69f4-4d89-a970-f853a132eae0",
+      "name": "Wait",
+      "webhookId": "b8e98e3f-f99c-4a07-8e25-1061c79d318e"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.email }}",
+        "subject": "Introduction from [Your Company Name]",
+        "emailType": "text",
+        "message": "Hi there,  I hope this email finds you well.  My name is [Your Name] from [Your Company Name]. We specialize in [your services - web development, marketing, etc.].  I wanted to reach out to introduce our services: - [Service 1] - [Service 2] - [Service 3]  Would you be interested in learning more? I'd love to connect and discuss how we can help.  Best regards, [Your Name] [Your Position] [Your Company] [Phone/Email]",
+        "options": {
+          "bccList": "uelahi502@gmail.com"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        272,
+        -128
+      ],
+      "id": "ae586c84-fb21-4a29-b109-e96151e53af8",
+      "name": "Send a message",
+      "webhookId": "36e7db17-d158-418c-9b00-9cdf96febc36",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "FgWw6KDSUnclG0AK",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "67007dfc-d6c4-4d91-b322-eb05434e2e88",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c458b38b892d8272dbf3f458e62313e1e0d0997622645579037d6971f6f35e54"
+  },
+  "id": "7IGjDtRVCG9SFDoA",
+  "tags": []
+}
